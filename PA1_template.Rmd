@@ -7,19 +7,48 @@ output:
 
 
 ## Loading and preprocessing the data
-
+wget https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip
+     unzip('repdata%2Fdata%2Factivity.zip')
+Data <- read.csv("activity.csv", header = TRUE, sep = ",", na.strings = "NA")
+DataDate <- as.Date(data$date, format = "%Y-%m-%d")
 
 
 ## What is mean total number of steps taken per day?
+Steps_Per_Day <- aggregate(steps ~ date, data, sum)
+hist(Steps_Per_Day$steps, xlab="Number of Steps")
 
-
+mean(Steps_Per_Day$steps)
+## 10766 steps
+median(Steps_Per_Day$steps)
+## 10765 steps
 
 ## What is the average daily activity pattern?
+Steps_Per_Interval <- aggregate(steps ~ interval, data, mean)
+plot(Steps_Per_Interval$interval,Steps_Per_Interval$steps, type="l", xlab="Interval", ylab="Steps")
 
 
+Interval_Maximum_Steps <- Steps_Per_Interval[which.max(Steps_Per_Interval$steps)]
+## 835
 
 ## Imputing missing values
+Number_Missing_Values <- sum(is.na(as.character(data$steps)))
+##2304 missing values
 
+data[Number_Missing_Values, ]$steps<-unlist(lapply(Number_Missing_Values, FUN=function(NA_index){
+                Steps_Per_Interval[data[Number_Missing_Values,]$interval==Steps_Per_Interval$interval,]))
+
+# historgram for total steps
+hist(as.numeric(Steps_Per_Day_Complete$steps), breaks = 20, xlab = "Steps",
+
+mean(Steps_Per_Day_Complete$steps)
+##10766
+median(Steps_Per_Day_Complete$steps)
+##10766
+#### frequency and variance changes for certain intervals
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+new$dow = as.factor((weekdays,weekdays), "Weekday", "Weekend"))
+AllSteps <- aggregate(steps ~ interval + dow, new, mean)
+xyplot(AllSteps$steps ~ AllSteps$interval|AllSteps$dow, ,xlab="Interval", ylab="Steps", type="l")
